@@ -29,7 +29,7 @@ class OperationalTransformSite {
 		listeners << c
 	}
 
-	def createOperationalTransform(int type, def c, int p) {
+	OperationalTransform createOperationalTransform(int type, def c, int p) {
 		OperationalTransform trans = new OperationalTransform(type: type, sid: id, c: c as char, p: p)
 
 		execute(trans)
