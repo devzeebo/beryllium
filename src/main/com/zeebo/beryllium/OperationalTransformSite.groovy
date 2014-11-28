@@ -39,7 +39,7 @@ class OperationalTransformSite {
 
 		trans = updateHL trans
 
-		network?.broadcast(id, trans)
+		network?.broadcast(this, trans)
 
 		return trans
 	}

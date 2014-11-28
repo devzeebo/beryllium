@@ -26,9 +26,9 @@ class OperationalTransformNetwork {
 		}
 	}
 
-	void broadcast(int sendingSite, OperationalTransform transform) {
+	void broadcast(OperationalTransformSite sendingSite, OperationalTransform transform) {
 		sites.each {
-			if (it.id != sendingSite) {
+			if (it.id != sendingSite.id) {
 				it.receiveQueue << transform
 			}
 		}
