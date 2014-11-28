@@ -56,10 +56,6 @@ class OperationalTransformSiteTest extends GroovyTestCase {
 		site1.createOperationalTransform(OperationalTransform.TYPE_INSERT, 'b', 1)
 		site1.createOperationalTransform(OperationalTransform.TYPE_INSERT, 'c', 2)
 
-		println s1b
-		println s2b
-		println s3b
-
 		site2.tryInvokeRemote()
 		site3.tryInvokeRemote()
 
@@ -76,13 +72,70 @@ class OperationalTransformSiteTest extends GroovyTestCase {
 		site2.tryInvokeRemote()
 		site3.tryInvokeRemote()
 
-		println s1b
-		println s2b
-		println s3b
+		assert s1b.toString() == s2b.toString()
+		assert s2b.toString() == s3b.toString()
+	}
+
+	void testInsertAndDelete() {
+		site1.createOperationalTransform(OperationalTransform.TYPE_INSERT, 'a', 0)
+		site1.createOperationalTransform(OperationalTransform.TYPE_INSERT, 'b', 0)
+		site1.createOperationalTransform(OperationalTransform.TYPE_DELETE, ' ', 0)
+		site1.createOperationalTransform(OperationalTransform.TYPE_INSERT, 'c', 1)
+		site1.createOperationalTransform(OperationalTransform.TYPE_DELETE, ' ', 1)
+
+		site2.tryInvokeRemote()
+		site3.tryInvokeRemote()
 
 		assert s1b.toString() == s2b.toString()
 		assert s2b.toString() == s3b.toString()
 	}
 
+	void testConcurrentDelete() {
+		site1.createOperationalTransform(OperationalTransform.TYPE_INSERT, 'a', 0)
+		site1.createOperationalTransform(OperationalTransform.TYPE_INSERT, 'b', 1)
+		site1.createOperationalTransform(OperationalTransform.TYPE_INSERT, 'c', 2)
+		site1.createOperationalTransform(OperationalTransform.TYPE_INSERT, 'd', 3)
+		site1.createOperationalTransform(OperationalTransform.TYPE_INSERT, 'e', 4)
 
+		site2.tryInvokeRemote()
+		site3.tryInvokeRemote()
+
+		site2.createOperationalTransform(OperationalTransform.TYPE_DELETE, ' ', 0)
+		site3.createOperationalTransform(OperationalTransform.TYPE_DELETE, ' ', 0)
+
+		site1.tryInvokeRemote()
+		site2.tryInvokeRemote()
+		site3.tryInvokeRemote()
+
+		site2.createOperationalTransform(OperationalTransform.TYPE_DELETE, ' ', 1)
+		site3.createOperationalTransform(OperationalTransform.TYPE_DELETE, ' ', 2)
+
+		site1.tryInvokeRemote()
+		site2.tryInvokeRemote()
+		site3.tryInvokeRemote()
+
+		assert s1b.toString() == s2b.toString()
+		assert s2b.toString() == s3b.toString()
+	}
+
+	void testConcurrentInsertAndDelete() {
+		site1.createOperationalTransform(OperationalTransform.TYPE_INSERT, 'a', 0)
+		site1.createOperationalTransform(OperationalTransform.TYPE_INSERT, 'b', 1)
+		site1.createOperationalTransform(OperationalTransform.TYPE_INSERT, 'c', 2)
+		site1.createOperationalTransform(OperationalTransform.TYPE_INSERT, 'd', 3)
+		site1.createOperationalTransform(OperationalTransform.TYPE_INSERT, 'e', 4)
+
+		site2.tryInvokeRemote()
+		site3.tryInvokeRemote()
+
+		site2.createOperationalTransform(OperationalTransform.TYPE_INSERT, 'x', 1)
+		site3.createOperationalTransform(OperationalTransform.TYPE_DELETE, ' ', 1)
+
+		site1.tryInvokeRemote()
+		site2.tryInvokeRemote()
+		site3.tryInvokeRemote()
+
+		assert s1b.toString() == s2b.toString()
+		assert s2b.toString() == s3b.toString()
+	}
 }
