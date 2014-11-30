@@ -32,10 +32,10 @@ class OperationalTransformSite {
 	OperationalTransform createOperationalTransform(int type, def c, int p) {
 		OperationalTransform trans = new OperationalTransform(type: type, sid: id, c: c as char, p: p)
 
-		execute(trans)
-
 		sv[id]++
-		trans.sv = sv
+		trans.sv = sv as int[]
+
+		execute(trans)
 
 		trans = updateHL trans
 
